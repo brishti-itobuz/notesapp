@@ -1,13 +1,12 @@
-
 import mongoose from "mongoose";
+import dotenv from "dotenv/config";
 
 
-const connectionString =
-  "mongodb+srv://brishti:1234@brishti.mmfnj.mongodb.net/?retryWrites=true&w=majority&appName=brishti";
 
+const db_URL = process.env.CONNECTION_STRING;
 export async function connectToDb() {
   await mongoose
-    .connect(connectionString)
+    .connect(db_URL)
     .then(() => {
       console.log("Connected to MongoDB successfully!");
     })
@@ -15,3 +14,4 @@ export async function connectToDb() {
       console.error("Error connecting to MongoDB:", error);
     });
 }
+

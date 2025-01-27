@@ -3,15 +3,15 @@ import mongoose from "mongoose";
 const userSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
 
   token: {
@@ -20,10 +20,9 @@ const userSchema = mongoose.Schema({
 
   isVerified: {
     type: Boolean,
-    default: false
- }
-
-  });
+    default: false,
+  },
+});
 
 const User = mongoose.model("user", userSchema);
 export default User;

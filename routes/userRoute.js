@@ -1,13 +1,12 @@
 import express from "express";
-import { addUser } from "../controllers/userControllers.js";
-import { verifyToken } from "../emailVerify/mailVerify.js";
+import { addUser, loginUser } from "../controllers/userControllers.js";
+import { verifyToken } from "../middleware/tokenVerification.js";
+import { userValidator, userSchema } from "../validators/userValidation.js";
 
 const route = express.Router();
 
-route.post('/postData', addUser);
-route.get("/verify/:token",verifyToken)
-
+route.post("/addUser", userValidator(userSchema), addUser);
+route.get("/verify/:token", verifyToken);
+route.post("/loginUser", loginUser);
 
 export default route;
-
-

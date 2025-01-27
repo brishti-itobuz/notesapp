@@ -1,35 +1,33 @@
+import nodemailer from "nodemailer";
+import dotenv from "dotenv/config";
 
-import jwt from 'jsonwebtoken';
-import User from '../models/userSchema.js';
+export const mailSender = async (token) => {
+  console.log(token);
 
-export const verifyToken = async (req, res) => {
-    const {token} = req.params;
-    console.log("cgvjh", token);
-    
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: authUser,
+      pass: authPass,
+    },
+  });
 
-    if(!token) {
-        return res.status(401).json({
-            success : false,
-            message : "Unauthorized access"
-        })
-    }
+  const mailConfigurations = {
+    from: "brishti@itobuz.com",
 
-    jwt.verify(token, 'ourSecretKey', async function(err, decoded) {
-        if (err) {
-            console.log(err);
-            res.send("Email verification failed");
-        }
-        else {
-            await User.findOneAndUpdate({token:token},{$set : {isVerified : true,token : null}},{new:true})
-            res.send("Email verified successfully");
-        }
-    });
+    to: "brishti@itobuz.com",
 
-    
+    subject: "Email Verification",
 
+    text: `Hi! There, You have recently entered your email.
+             Please follow the given link to verify your email
+             http://localhost:3001/user/verify/${token} 
+             Thanks`,
+  };
+
+  transporter.sendMail(mailConfigurations, function (error, info) {
+    if (error) throw Error(error);
+    console.log("Email Sent Successfully");
+    console.log(info);
+  });
 };
-
-
-
-    
-
