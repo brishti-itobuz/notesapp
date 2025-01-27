@@ -55,6 +55,11 @@ export const loginUser = async (req, res) => {
       req.body.password,
       user_name.password
     );
+
+    // if(passwordMatch && User.isVerified === true ){
+    //   const accessToken = jwt.sign({}, secretKey , { expiresIn: "1h" });
+    // }
+
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

@@ -22,6 +22,16 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  accessToken: {
+    type: String,
+    default: null,
+  },
+
+  isLoggedIn : {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const User = mongoose.model("user", userSchema);
