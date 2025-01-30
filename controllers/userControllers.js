@@ -2,13 +2,13 @@ import User from "../models/userSchema.js";
 import { mailSender } from "../emailVerify/mailVerify.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import sessionSchema from "../models/sessionSchema";
 import dotenv from "dotenv/config";
 
 export const addUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const identical = await User.findOne({ email: email });
-    console.log(identical);
 
     if (identical) {
       res.status(400).json({
@@ -17,8 +17,7 @@ export const addUser = async (req, res) => {
         data: identical,
       });
     } else {
-      const token = jwt.sign({}, secretKey , { expiresIn: "30m" });
-
+      const token = jwt.sign({}, process.env.secretKey , { expiresIn: "30m" })
       mailSender(token, email);
       const user_name = await User.create({ username, email, password, token });
       const salt = await bcrypt.genSalt(10);
@@ -45,8 +44,9 @@ export const addUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const user_name = await User.findOne({ email: req.body.email });
-
+    const user_name = await User.findOne({ email: req.body.email })
+    
+    
     if (!user_name) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -56,9 +56,20 @@ export const loginUser = async (req, res) => {
       user_name.password
     );
 
-    // if(passwordMatch && User.isVerified === true ){
-    //   const accessToken = jwt.sign({}, secretKey , { expiresIn: "1h" });
-    // }
+
+    if(passwordMatch && user_name.isVerified === true ){
+      const user_id = await sessionSchema.findOne({ userId: user_name._id })   
+      if (!user_id)
+      {
+      await sessionSchema.create({ userId: user_name._id })
+      }
+    else {
+      return res.status(200).json({
+        message: "Session is active for the user",
+      })
+    }}
+    const accessToken = jwt.sign({id: user_name._id}, process.env.secretKey,{ expiresIn: "2m" });
+    const refreshToken = jwt.sign({id: user_name._id}, process.env.secretKey,{ expiresIn: "7d" });
 
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });

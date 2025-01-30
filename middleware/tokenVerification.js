@@ -12,7 +12,7 @@ export const verifyToken = async (req, res) => {
     });
   }
 
-  jwt.verify(token, secretKey , async function (err, decoded) {
+  jwt.verify(token, process.env.secretKey , async function (err, decoded) {
     if (err) {
       console.log(err);
       res.send("Email verification failed");
