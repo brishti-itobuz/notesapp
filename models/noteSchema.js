@@ -8,8 +8,17 @@ const noteSchema = mongoose.Schema({
   content: {
     type: String,
     required: true,
+  },
+
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref : 'user',
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
   }
-  
 });
 
 const Note = mongoose.model("note", noteSchema);
