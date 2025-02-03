@@ -3,6 +3,7 @@ import { mailSender } from "../emailVerify/mailVerify.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import sessionSchema from "../models/sessionSchema.js";
+import userSchema from "../models/userSchema.js";
 import dotenv from "dotenv/config";
 
 export const addUser = async (req, res) => {
@@ -98,7 +99,7 @@ res.status(200).json({
 };
 
 export const regenerateAccessToken = async (req, res) => {
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers.authorization;
   const refreshToken = authHeader.split(" ")[1];
   console.log(refreshToken)
   if (!refreshToken) {
@@ -112,13 +113,12 @@ export const regenerateAccessToken = async (req, res) => {
         message: "refresh token expired",
       }); 
     } else {
-      const id = decoded.userId;
+      const id = decoded.id;
       req.body.userId = id;
-      console.log(id);
 
       const verify = await userSchema.findById(id);
       const accessToken = jwt.sign({ id }, process.env.secretKey, {
-        expiresIn: "10m",
+        expiresIn: "30m",
       });
       return res.status(200).json({
         success: true,
@@ -127,3 +127,29 @@ export const regenerateAccessToken = async (req, res) => {
     }
   });
 };
+
+export const logoutUser = async (req, res) => {
+  const userPresent = await sessionSchema.findOne({ userId: req.body.userId});
+  
+  try {
+    if (userPresent) {
+      await sessionSchema.findOneAndDelete({ userId: req.body.userId });
+      return res.status(200).json({
+        success: true,
+        message: "User successfully logged out" 
+      })
+    }
+    else {
+      return res.status(404).json({
+        success: false,
+        message: "User not found or not logged in"
+      })
+    }
+  }
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    })
+  }
+}
