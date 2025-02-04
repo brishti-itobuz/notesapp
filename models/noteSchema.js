@@ -18,7 +18,11 @@ const noteSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-  }
+  },
+
+  fileName: {
+    type: String,
+}
 });
 
 const Note = mongoose.model("note", noteSchema);

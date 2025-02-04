@@ -19,7 +19,7 @@ export const addUser = async (req, res) => {
       });
     } else {
       const token = jwt.sign({}, process.env.secretKey, { expiresIn: "30m" });
-      mailSender(token, email);
+      await mailSender(token, email);
       const user_name = await User.create({ username, email, password, token });
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(user_name.password, salt);

@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv/config";
+import hbs from "nodemailer-express-handlebars";
 
 export const mailSender = async (token) => {
   console.log(token);
@@ -12,6 +13,19 @@ export const mailSender = async (token) => {
     },
   });
 
+  const handlebarsOptions = {
+    viewEngine: {
+      extName: ".hbs",
+      partialsDir: "template",
+      defaultLayout: false,
+      layoutsDir: "template",
+    },
+    viewPath: "template",
+    extName: ".hbs",
+  };
+
+  transporter.use("compile", hbs(handlebarsOptions));
+
   const mailConfigurations = {
     from: "brishti@itobuz.com",
 
@@ -19,15 +33,18 @@ export const mailSender = async (token) => {
 
     subject: "Email Verification",
 
-    text: `Hi! There, You have recently entered your email.
-             Please follow the given link to verify your email
-             http://localhost:3001/user/verify/${token} 
-             Thanks`,
+    template: "email",
+
+    context: {
+      token: `${token}`,
+    },
   };
 
-  transporter.sendMail(mailConfigurations, function (error, info) {
-    if (error) throw Error(error);
-    console.log("Email Sent Successfully");
-    console.log(info);
+  transporter.sendMail(mailConfigurations, (error, info) => {
+    if (error) throw new Error(error);
+    else {
+      console.log("Email Sent Successfully");
+      console.log(info);
+    }
   });
 };
