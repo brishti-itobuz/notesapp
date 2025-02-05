@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../models/userSchema.js"
 
 const noteSchema = mongoose.Schema({
   title: {
@@ -12,7 +13,7 @@ const noteSchema = mongoose.Schema({
 
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref : 'user',
+    ref : User,
     required: true,
   },
   createdAt: {
